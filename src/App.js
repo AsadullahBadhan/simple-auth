@@ -1,14 +1,20 @@
 import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { createUserWithEmailAndPassword, FacebookAuthProvider, getAuth, GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import firebaseConfig from './firebaseConfig.js';
 import './App.css';
 import logo from './images/logo2.png';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { FcGoogle } from 'react-icons/fc'
+import { BsFacebook, BsGithub } from 'react-icons/bs'
 
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
+const fbProvider = new FacebookAuthProvider();
+const ghProvider = new GithubAuthProvider();
 
 function App() {
+  const formRef = useRef();
   const [message, setMessage] = useState('');
   const [user, setUser] = useState({});
 
@@ -43,22 +49,33 @@ function App() {
         createUserWithEmailAndPassword(auth, user.email, user.password)
           .then(userCred => {
             console.log(userCred.user)
+            setMessage('user created successfully')
           })
           .catch(error => {
             console.log(error)
           })
+
+        formRef.current.reset();
       }
     } else {
       setMessage('Password didn\'t match');
     }
   }
 
+  function handleOAuthSignUp(provider) {
+    signInWithPopup(auth, provider)
+      .then(result => {
+        console.log(result.user);
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
   return (
     <div className="App">
-      <div className="logo">
-        <img src={logo} alt="logo" />
-      </div>
-      <form onSubmit={handleFormSubmit}>
+      <img src={logo} alt="logo" className='logo' />
+      <form onSubmit={handleFormSubmit} ref={formRef}>
         <input type="text" onBlur={setFieldInfo} name="username" placeholder='Name' required />
         <br />
         <input type="email" onBlur={setFieldInfo} name="email" placeholder='Email address' required />
@@ -67,12 +84,13 @@ function App() {
         <br />
         <input type="password" onBlur={setFieldInfo} name="confirmPassword" placeholder='Confirm Password' required />
         <br />
-        <button type="submit">Sign Up</button>
+        <button type="submit" className='signup-btn'>Sign Up</button>
       </form>
-      <button>Sign In with Google</button>
-      <button>Sign In with Facebook</button>
-      <button>Sign In with Twitter</button>
-      <h1>{message}</h1>
+      <div className='signup-option'>
+        <button onClick={() => handleOAuthSignUp(googleProvider)}><FcGoogle /></button>
+        <button onClick={() => handleOAuthSignUp(fbProvider)}><BsFacebook /></button>
+        <button onClick={() => handleOAuthSignUp(ghProvider)}><BsGithub /></button>
+      </div>
     </div>
   );
 }
