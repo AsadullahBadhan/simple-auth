@@ -128,6 +128,7 @@ function App() {
             : <p>Need an account? <span className='login-btn' onClick={() => setNewUser(!newUser)}>Sign Up</span></p>
         }
       </div>
+      <Link to='/reset'>Forgot Password?</Link>
     </div>
   );
 

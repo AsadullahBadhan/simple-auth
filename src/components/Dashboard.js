@@ -24,7 +24,6 @@ const Dashboard = () => {
       <img src={photoURL} alt="" />
       <p>{email}</p>
       <Link to='/update-profile'>Update Profile</Link>
-      <Link to='/reset'>Forgot Password?</Link>
       <br />
       <button onClick={handleSignOut}>Sign out</button>
     </div>
